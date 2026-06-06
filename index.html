@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Eco Nativo Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1e1e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <style>
+        :root {
+            --bg-dark: #1e1e1e;
+            --bg-light: #f0f2f5;
+            --accent: #4285f4;
+            --conductor: #2d2d2d;
+            --cliente: #e3f2fd;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            user-select: none;
+        }
+
+        header { text-align: center; margin-bottom: 15px; }
+        h1 { margin: 0; color: var(--bg-dark); font-size: 26px; }
+        .tagline { font-size: 11px; color: #666; letter-spacing: 1px; font-weight: bold; }
+
+        .lang-bar {
+            display: flex;
+            gap: 15px;
+            background: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .lang-btn {
+            font-size: 28px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            background: none;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .lang-btn.active { border-color: var(--accent); transform: scale(1.2); }
+
+        .main-card {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .status-badge {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: block;
+            text-align: center;
+        }
+
+        .voice-section {
+            background: var(--conductor);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .display-text {
+            font-size: 19px;
+            min-height: 50px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            color: #ddd;
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: white;
+        }
+
+        .btn-blue { background: linear-gradient(135deg, #4285f4, #1a73e8); }
+        .btn-gray { background: linear-gradient(135deg, #5f6368, #3c4043); }
+        .recording { background: #d93025 !important; animation: pulse 1.5s infinite; }
+
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            margin-top: 15px;
+            padding-bottom: 5px;
+        }
+
+        .q-btn {
+            background: #444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-size: 11px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .result-section {
+            background: var(--cliente);
+            padding: 20px;
+            border-radius: 20px;
+            border-left: 6px solid var(--accent);
+            display: none;
+            margin-top: 15px;
+        }
+
+        .result-text { font-size: 22px; color: #1a202c; margin: 10px 0; font-weight: 600; }
+
+        .input-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 8px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            outline: none;
+        }
+
+        .btn-send { background: var(--accent); width: 50px; flex-shrink: 0; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        
+        footer { margin-top: 20px; font-size: 10px; color: #aaa; text-align: center; }
+
+        /* Herramienta de Iconos - Solo para el dueño */
+        #iconGen {
+            margin-top: 50px;
+            padding: 10px;
+            background: #eee;
+            border-radius: 10px;
+            font-size: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🗣️ Eco Nativo Pro</h1>
+        <div class="tagline">TECNOLOGÍA PARA CONDUCTORES</div>
+    </header>
+
+    <div class="lang-bar">
+        <button class="lang-btn active" onclick="changeLang('en')" id="btn-en">🇬🇧</button>
+        <button class="lang-btn" onclick="changeLang('fr')" id="btn-fr">🇫🇷</button>
+        <button class="lang-btn" onclick="changeLang('de')" id="btn-de">🇩🇪</button>
+    </div>
+
+    <div class="main-card">
+        <span class="status-badge" id="directionText">Conductor (ES) ➔ Cliente (EN)</span>
+        
+        <div class="voice-section">
+            <div class="display-text" id="transcript">Listo para escuchar...</div>
+            <div class="btn-grid">
+                <button class="btn btn-blue" id="recordMe">🎙️ MI VOZ</button>
+                <button class="btn btn-gray" id="recordClient">🗣️ CLIENTE</button>
+            </div>
+            
+            <div class="quick-actions">
+                <button class="q-btn" onclick="quickT('Solo efectivo, por favor')">💵 Solo efectivo</button>
+                <button class="q-btn" onclick="quickT('Cuidado al bajar, por favor')">⚠️ Cuidado</button>
+                <button class="q-btn" onclick="quickT('Este autobús va hacia el centro')">🏙️ Va al Centro</button>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultBox">
+            <div class="result-text" id="translatedText">...</div>
+            <button class="btn btn-blue" style="padding: 8px; font-size: 12px;" onclick="replayAudio()">🔊 REPETIR</button>
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="manualInput" placeholder="Escribir mensaje...">
+            <button class="btn btn-send" onclick="translateManual()">OK</button>
+        </div>
+    </div>
+
+    <!-- BOTÓN PARA DESCARGAR TUS ICONOS (Solo úsalo una vez para crear los archivos) -->
+    <div id="iconGen">
+        <p>HERRAMIENTA DE CONFIGURACIÓN:</p>
+        <button onclick="downloadIcons()">Generar y Descargar Iconos PWA</button>
+        <canvas id="canvasIcon" width="512" height="512" style="display:none"></canvas>
+    </div>
+
+    <footer>MEDBASHA • REPOSITORIO GITHUB</footer>
+
+    <script>
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+
+        let targetLang = 'en';
+        let lastT = ""; let lastL = "";
+
+        const langMeta = {
+            'en': { code: 'en-US' },
+            'fr': { code: 'fr-FR' },
+            'de': { code: 'de-DE' }
+        };
+
+        function changeLang(lang) {
+            targetLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+            updateBadge('me');
+        }
+
+        function updateBadge(speaker) {
+            const badge = document.getElementById('directionText');
+            badge.innerText = speaker === 'me' ? `Conductor (ES) ➔ Cliente (${targetLang.toUpperCase()})` : `Cliente (${targetLang.toUpperCase()}) ➔ Conductor (ES)`;
+        }
+
+        async function translate(text, from, to) {
+            const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`);
+            const data = await res.json();
+            return data.responseData.translatedText;
+        }
+
+        async function quickT(text) {
+            document.getElementById('transcript').innerText = text;
+            const t = await translate(text, 'es', targetLang);
+            showResult(t, langMeta[targetLang].code);
+        }
+
+        async function translateManual() {
+            const val = document.getElementById('manualInput').value;
+            if(!val) return;
+            document.getElementById('transcript').innerText = val;
+            const t = await translate(val, 'es', targetLang);
+            showResult(t, langMeta[targetLang].code);
+            document.getElementById('manualInput').value = "";
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const rec = new SpeechRecognition();
+
+        function startVoice(speaker) {
+            if(navigator.vibrate) navigator.vibrate(50);
+            updateBadge(speaker);
+            rec.lang = speaker === 'me' ? 'es-ES' : langMeta[targetLang].code;
+            const btn = speaker === 'me' ? document.getElementById('recordMe') : document.getElementById('recordClient');
+            btn.classList.add('recording');
+            rec.start();
+            rec.onresult = async (e) => {
+                const text = e.results[0][0].transcript;
+                document.getElementById('transcript').innerText = text;
+                const from = speaker === 'me' ? 'es' : targetLang;
+                const to = speaker === 'me' ? targetLang : 'es';
+                const res = await translate(text, from, to);
+                showResult(res, speaker === 'me' ? langMeta[targetLang].code : 'es-ES');
+            };
+            rec.onend = () => btn.classList.remove('recording');
+        }
+
+        function showResult(text, code) {
+            document.getElementById('translatedText').innerText = text;
+            document.getElementById('resultBox').style.display = "block";
+            lastT = text; lastL = code;
+            speak(text, code);
+        }
+
+        function speak(text, code) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = code; u.rate = 0.9;
+            window.speechSynthesis.speak(u);
+        }
+
+        function replayAudio() { speak(lastT, lastL); }
+
+        document.getElementById('recordMe').onclick = () => startVoice('me');
+        document.getElementById('recordClient').onclick = () => startVoice('client');
+
+        // FUNCIÓN PARA GENERAR TUS ICONOS AUTOMÁTICAMENTE
+        function downloadIcons() {
+            const canvas = document.getElementById('canvasIcon');
+            const ctx = canvas.getContext('2d');
+            
+            const sizes = [192, 512];
+            sizes.forEach(size => {
+                canvas.width = size; canvas.height = size;
+                // Fondo
+                ctx.fillStyle = '#1e1e1e';
+                ctx.beginPath();
+                ctx.roundRect(0, 0, size, size, size/4);
+                ctx.fill();
+                // Emoji
+                ctx.font = `${size/1.8}px serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🗣️', size/2, size/2);
+                
+                const link = document.createElement('a');
+                link.download = `icon-${size}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
